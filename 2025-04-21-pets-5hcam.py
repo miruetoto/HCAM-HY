@@ -100,9 +100,9 @@ for i in range(5):
         fname = str(dls.train_ds.items[idx]).split("/")[-1]
         res_img.save(f"./data/pet_random_removed{i+1}/{fname}")
 #---#
+dls = dls_list[0]
 for idx, path in enumerate(dls.train_ds.items):
     lrnr = lrnr_list[0]
-    dls = dls_list[0]
     img, cams = get_img_and_cams(dls=dls,idx=idx,model=lrnr.model)
     original_cams = []
     for lrnr in lrnr_list[1:]:
@@ -113,7 +113,6 @@ for idx, path in enumerate(dls.train_ds.items):
                 0.159*original_cams[1] +\
                 0.107*original_cams[2] +\
                 0.072*original_cams[3] +\
-
     fig = make_figure(img,cams)
     fname = str(path).split("/")[-1].split(".")[0]
     fig.savefig(f"./figs/pet/{fname}-5hcam.pdf")
