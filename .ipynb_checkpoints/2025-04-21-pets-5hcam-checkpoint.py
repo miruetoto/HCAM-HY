@@ -45,7 +45,7 @@ def get_img_and_cams(dls,idx,model):
     img, label = dls.train_ds[idx]
     img_norm, = next(iter(dls.test_dl([img])))
     cam = original_cam(model=model, input_tensor=img_norm, label=label)
-    hcam = h_cam(model=model, input_tensor=img_norm, label=label)
+    hcam = original_cam(model=model, input_tensor=img_norm, label=label)
     cams = [cam, hcam]
     for method in METHODS:
         cams.append(torch.tensor(method(model=model, target_layers=model[0][-1])(input_tensor=img_norm,targets=None)))
