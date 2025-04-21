@@ -103,7 +103,7 @@ for i in range(3):
 for idx, path in enumerate(dls.train_ds.items):
     lrnr = lrnr_list[0]
     dls = dls_list[0]
-    img, cams = get_img_and_cams(dls=dls,idx=3,model=lrnr.model)
+    img, cams = get_img_and_cams(dls=dls,idx=idx,model=lrnr.model)
     original_cams = []
     for lrnr in lrnr_list[1:]:
         _, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
