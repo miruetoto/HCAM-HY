@@ -1,4 +1,5 @@
 import torchvision
+import pickle
 from copy import deepcopy
 from tqdm import tqdm
 from pytorch_grad_cam import (
@@ -25,7 +26,7 @@ def original_cam(model, input_tensor, label):
         align_corners=False
     )
     return cam.squeeze(0)
-def make_figure(img,cams):
+def make_figure(img,allcams):
     fig, axs = plt.subplots(3,4)
     for ax in axs.flatten():
         img.show(ax=ax)
@@ -35,21 +36,21 @@ def make_figure(img,cams):
     for ax,method in zip(axs.flatten()[3:], METHODS):
         ax.set_title(f"{method.__name__}")
     #
-    for ax,cam in zip(axs.flatten()[1:], cams):
+    for ax,cam in zip(axs.flatten()[1:], allcams):
         ax.imshow(cam.squeeze(), alpha=0.7, cmap="magma")
     fig.set_figwidth(10)            
     fig.set_figheight(7.5)
     fig.tight_layout() 
     return fig
-def get_img_and_cams(dls,idx,model):
+def get_img_and_allcams(dls,idx,model):
     img, label = dls.train_ds[idx]
     img_norm, = next(iter(dls.test_dl([img])))
     cam = original_cam(model=model, input_tensor=img_norm, label=label)
     hcam = original_cam(model=model, input_tensor=img_norm, label=label)
-    cams = [cam, hcam]
+    allcams = [cam, hcam]
     for method in METHODS:
-        cams.append(torch.tensor(method(model=model, target_layers=model[0][-1])(input_tensor=img_norm,targets=None)))
-    return img, cams
+        allcams.append(torch.tensor(method(model=model, target_layers=model[0][-1])(input_tensor=img_norm,targets=None)))
+    return img, allcams
 def get_img_and_originalcam(dls,idx,model):
     img, label = dls.train_ds[idx]
     img_norm, = next(iter(dls.test_dl([img])))
@@ -67,11 +68,12 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
+THETA=
 #---#
 dls_list = []
 lrnr_list = []
-for i in range(5):
-    PATH = f'./data/pet_random_removed{i}'
+for i in range(3):
+    PATH = f'./data/pet_random_removed_THETA0.2/5hcam/removed{i}'
     torch.manual_seed(43052)
     dls = ImageDataLoaders.from_name_func(
         path = PATH,
@@ -98,21 +100,29 @@ for i in range(5):
         res_img_tensor= img_tensor*weight / (img_tensor*weight).max()
         res_img = torchvision.transforms.ToPILImage()(res_img_tensor)
         fname = str(dls.train_ds.items[idx]).split("/")[-1]
-        res_img.save(f"./data/pet_random_removed{i+1}/{fname}")
+        res_img.save(f"./data/pet_random_removed_THETA0.2/5hcam/removed{i+1}/{fname}")
 #---#
 dls = dls_list[0]
+camdata = []
 for idx, path in enumerate(dls.train_ds.items):
-    lrnr = lrnr_list[0]
-    img, cams = get_img_and_cams(dls=dls,idx=idx,model=lrnr.model)
-    original_cams = []
+    lrnr = lrnr_list[0]    
+    img, allcams = get_img_and_allcams(dls=dls,idx=idx,model=lrnr.model)
+    hcams = [allcams[0]]
     for lrnr in lrnr_list[1:]:
         _, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
-        original_cams.append(cam)
-    cams[0] = 0.354*cams[0] +\
-                0.237*original_cams[0] +\
-                0.159*original_cams[1] +\
-                0.107*original_cams[2] +\
-                0.072*original_cams[3] +\
-    fig = make_figure(img,cams)
+        hcams.append(cam)
+    allcams[0] = 0.354*hcams[0] +\
+                0.237*hcams[1] +\
+                0.159*hcams[2] +\
+                0.107*hcams[3] +\
+                0.072*hcams[4]
+    fig = make_figure(img,allcams)
     fname = str(path).split("/")[-1].split(".")[0]
+    camdata.append([fname,allcams,hcams]) #
     fig.savefig(f"./figs/pet/{fname}-5hcam.pdf")
+with open('dls_list-5hcam.pkl', 'wb') as f:
+    pickle.dump(dls_list, f)
+with open('lrnr_list-5hcam.pkl', 'wb') as f:
+    pickle.dump(lrnr_list, f)
+with open('camdata-5cam.pkl', 'wb') as f:
+    pickle.dump(lrnr_list, f)    
