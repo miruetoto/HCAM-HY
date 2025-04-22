@@ -118,9 +118,9 @@ for idx, path in enumerate(dls.train_ds.items):
     fname = str(path).split("/")[-1].split(".")[0]
     camdata.append([fname,allcams,hcams]) #
     fig.savefig(f"./figs/pet/{fname}-3hcam.pdf")
-with open('dls_list-3hcam.pkl', 'wb') as f:
+with open('results/dls_list-3hcam.pkl', 'wb') as f:
     pickle.dump(dls_list, f)
-with open('lrnr_list-3hcam.pkl', 'wb') as f:
+with open('results/lrnr_list-3hcam.pkl', 'wb') as f:
     pickle.dump(lrnr_list, f)
-with open('camdata-3cam.pkl', 'wb') as f:
+with open('results/camdata-3cam.pkl', 'wb') as f:
     pickle.dump(lrnr_list, f)    
