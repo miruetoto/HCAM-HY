@@ -68,7 +68,7 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA=
+THETA = 0.2
 #---#
 dls_list = []
 lrnr_list = []
@@ -95,7 +95,7 @@ for i in range(3):
     for idx, _ in enumerate(dls.train_ds):
         img, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
         img_tensor = torchvision.transforms.ToTensor()(img)
-        k = 0.2/cam.std()**2 
+        k = THETA/cam.std()**2 
         weight = np.exp(-k*cam)
         res_img_tensor= img_tensor*weight / (img_tensor*weight).max()
         res_img = torchvision.transforms.ToPILImage()(res_img_tensor)
@@ -125,4 +125,4 @@ with open('results/dls_list-5hcam.pkl', 'wb') as f:
 with open('results/lrnr_list-5hcam.pkl', 'wb') as f:
     pickle.dump(lrnr_list, f)
 with open('results/camdata-5cam.pkl', 'wb') as f:
-    pickle.dump(lrnr_list, f)    
+    pickle.dump(camdata, f)    

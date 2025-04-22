@@ -123,4 +123,4 @@ with open('results/dls_list-3hcam.pkl', 'wb') as f:
 with open('results/lrnr_list-3hcam.pkl', 'wb') as f:
     pickle.dump(lrnr_list, f)
 with open('results/camdata-3cam.pkl', 'wb') as f:
-    pickle.dump(lrnr_list, f)    
+    pickle.dump(camdata, f)    
