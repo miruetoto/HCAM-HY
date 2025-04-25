@@ -68,12 +68,12 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.2
+THETA = 0.1
 #---#
 dls_list = []
 lrnr_list = []
 for i in range(5):
-    PATH = f'./data/pet_random_removed_THETA0.2/5hcam/removed{i}'
+    PATH = f'./data/pet_random_removed_THETA{THETA}/5hcam/removed{i}'
     torch.manual_seed(43052)
     dls = ImageDataLoaders.from_name_func(
         path = PATH,
@@ -100,7 +100,7 @@ for i in range(5):
         res_img_tensor= img_tensor*weight / (img_tensor*weight).max()
         res_img = torchvision.transforms.ToPILImage()(res_img_tensor)
         fname = str(dls.train_ds.items[idx]).split("/")[-1]
-        res_img.save(f"./data/pet_random_removed_THETA0.2/5hcam/removed{i+1}/{fname}")
+        res_img.save(f"./data/pet_random_removed_THETA{THETA}/5hcam/removed{i+1}/{fname}")
 #---#
 dls = dls_list[0]
 camdata = []
@@ -111,18 +111,16 @@ for idx, path in enumerate(dls.train_ds.items):
     for lrnr in lrnr_list[1:]:
         _, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
         hcams.append(cam)
-    allcams[0] = 0.354*hcams[0] +\
-                0.237*hcams[1] +\
-                0.159*hcams[2] +\
-                0.107*hcams[3] +\
-                0.072*hcams[4]
+    allcams[0] = 0.434*hcams[0] +\
+                0.3*hcams[1] +\
+                0.266*hcams[2]
     fig = make_figure(img,allcams)
     fname = str(path).split("/")[-1].split(".")[0]
     camdata.append([fname,allcams,hcams]) #
-    fig.savefig(f"./figs/pet/{fname}-5hcam.pdf")
-with open('results/dls_list-5hcam.pkl', 'wb') as f:
+    fig.savefig(f"./figs/pet_THETA{THETA}/{fname}-5hcam.pdf")
+with open(f'results/THETA{THETA}/dls_list-5hcam.pkl', 'wb') as f:
     dill.dump(dls_list, f)
-with open('results/lrnr_list-5hcam.pkl', 'wb') as f:
+with open(f'results/THETA{THETA}/lrnr_list-5hcam.pkl', 'wb') as f:
     dill.dump(lrnr_list, f)
-with open('results/camdata-5cam.pkl', 'wb') as f:
+with open(f'results/THETA{THETA}/camdata-5hcam.pkl', 'wb') as f:
     dill.dump(camdata, f)    

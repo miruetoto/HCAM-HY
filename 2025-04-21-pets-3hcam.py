@@ -68,12 +68,12 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.2
+THETA = 0.1
 #---#
 dls_list = []
 lrnr_list = []
 for i in range(3):
-    PATH = f'./data/pet_random_removed_THETA0.2/3hcam/removed{i}'
+    PATH = f'./data/pet_random_removed_THETA{THETA}/3hcam/removed{i}'
     torch.manual_seed(43052)
     dls = ImageDataLoaders.from_name_func(
         path = PATH,
@@ -100,7 +100,7 @@ for i in range(3):
         res_img_tensor= img_tensor*weight / (img_tensor*weight).max()
         res_img = torchvision.transforms.ToPILImage()(res_img_tensor)
         fname = str(dls.train_ds.items[idx]).split("/")[-1]
-        res_img.save(f"./data/pet_random_removed_THETA0.2/3hcam/removed{i+1}/{fname}")
+        res_img.save(f"./data/pet_random_removed_THETA{THETA}/3hcam/removed{i+1}/{fname}")
 #---#
 dls = dls_list[0]
 camdata = []
@@ -117,10 +117,10 @@ for idx, path in enumerate(dls.train_ds.items):
     fig = make_figure(img,allcams)
     fname = str(path).split("/")[-1].split(".")[0]
     camdata.append([fname,allcams,hcams]) #
-    fig.savefig(f"./figs/pet/{fname}-3hcam.pdf")
-with open('results/dls_list-3hcam.pkl', 'wb') as f:
+    fig.savefig(f"./figs/pet_THETA{THETA}/{fname}-3hcam.pdf")
+with open(f'results/THETA{THETA}/dls_list-3hcam.pkl', 'wb') as f:
     dill.dump(dls_list, f)
-with open('results/lrnr_list-3hcam.pkl', 'wb') as f:
+with open(f'results/THETA{THETA}/lrnr_list-3hcam.pkl', 'wb') as f:
     dill.dump(lrnr_list, f)
-with open('results/camdata-3hcam.pkl', 'wb') as f:
+with open(f'results/THETA{THETA}/camdata-3hcam.pkl', 'wb') as f:
     dill.dump(camdata, f)    
