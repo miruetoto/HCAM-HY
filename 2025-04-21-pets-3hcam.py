@@ -1,5 +1,5 @@
 import torchvision
-import pickle
+import dill
 from copy import deepcopy
 from tqdm import tqdm
 from pytorch_grad_cam import (
@@ -68,7 +68,7 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.2 
+THETA = 0.2
 #---#
 dls_list = []
 lrnr_list = []
@@ -119,8 +119,8 @@ for idx, path in enumerate(dls.train_ds.items):
     camdata.append([fname,allcams,hcams]) #
     fig.savefig(f"./figs/pet/{fname}-3hcam.pdf")
 with open('results/dls_list-3hcam.pkl', 'wb') as f:
-    pickle.dump(dls_list, f)
+    dill.dump(dls_list, f)
 with open('results/lrnr_list-3hcam.pkl', 'wb') as f:
-    pickle.dump(lrnr_list, f)
-with open('results/camdata-3cam.pkl', 'wb') as f:
-    pickle.dump(camdata, f)    
+    dill.dump(lrnr_list, f)
+with open('results/camdata-3hcam.pkl', 'wb') as f:
+    dill.dump(camdata, f)    

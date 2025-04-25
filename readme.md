@@ -10,4 +10,5 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 pip install grad-cam
 pip install fastai
 apt install -y libgl1 # 이걸해야지 cv2가 임포트됨
+pip install dill
 ```

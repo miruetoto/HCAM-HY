@@ -1,5 +1,5 @@
 import torchvision
-import pickle
+import dill
 from copy import deepcopy
 from tqdm import tqdm
 from pytorch_grad_cam import (
@@ -72,7 +72,7 @@ THETA = 0.2
 #---#
 dls_list = []
 lrnr_list = []
-for i in range(3):
+for i in range(5):
     PATH = f'./data/pet_random_removed_THETA0.2/5hcam/removed{i}'
     torch.manual_seed(43052)
     dls = ImageDataLoaders.from_name_func(
@@ -121,8 +121,8 @@ for idx, path in enumerate(dls.train_ds.items):
     camdata.append([fname,allcams,hcams]) #
     fig.savefig(f"./figs/pet/{fname}-5hcam.pdf")
 with open('results/dls_list-5hcam.pkl', 'wb') as f:
-    pickle.dump(dls_list, f)
+    dill.dump(dls_list, f)
 with open('results/lrnr_list-5hcam.pkl', 'wb') as f:
-    pickle.dump(lrnr_list, f)
+    dill.dump(lrnr_list, f)
 with open('results/camdata-5cam.pkl', 'wb') as f:
-    pickle.dump(camdata, f)    
+    dill.dump(camdata, f)    

@@ -2,6 +2,6 @@ data/
 figs/
 old/
 paper/
-pkg/
+results/
 blog/
 .ipynb_checkpoints/
