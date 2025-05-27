@@ -68,7 +68,7 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.5
+THETA = 0.5 # 0.05로 하는게 나을듯
 #---#
 PATH = f'./data/chest_xray_THETA{THETA}/3hcam/originalsize'
 dls = ImageDataLoaders.from_name_func(
