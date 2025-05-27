@@ -68,7 +68,7 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.1
+THETA = 0.5
 #---#
 PATH = f'./data/chest_xray_THETA{THETA}/3hcam/originalsize'
 dls = ImageDataLoaders.from_name_func(
@@ -100,24 +100,24 @@ for i in range(3):
         path = PATH,
         fnames = get_image_files(PATH),
         label_func = lambda x: "NORMAL" if x[0].isupper() else "PNEUMONIA",
-        item_tfms = Resize(1024),
+        item_tfms = Resize(512),
         batch_tfms= ToTensor(),
         num_workers = 0
     )
     dls_list.append(dls)
-    lrnr = vision_learner(dls,resnet34,metrics=error_rate)
+    lrnr = vision_learner(dls,resnet101,metrics=error_rate)
     lrnr_list.append(lrnr)
     lrnr.model[1] = torch.nn.Sequential(
         torch.nn.AdaptiveAvgPool2d(output_size=1), 
         torch.nn.Flatten(),
-        torch.nn.Linear(1024,out_features=2,bias=False)
+        torch.nn.Linear(2048,out_features=2,bias=False)
     )
-    lrnr.fine_tune(3)
+    lrnr.fine_tune(1)
     for idx, _ in enumerate(dls.train_ds):
         img, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
         compose = torchvision.transforms.Compose([
             torchvision.transforms.ToTensor(),
-            torchvision.transforms.Resize((1024,1024))
+            torchvision.transforms.Resize((512,512))
         ])
         img_tensor = torchvision.transforms.ToTensor()(img)
         k = THETA/cam.std()**2 
@@ -148,4 +148,4 @@ with open(f'results/chest/THETA{THETA}/dls_list-3hcam.pkl', 'wb') as f:
 with open(f'results/chest/THETA{THETA}/lrnr_list-3hcam.pkl', 'wb') as f:
     dill.dump(lrnr_list, f)
 with open(f'results/chest/THETA{THETA}/camdata-3hcam.pkl', 'wb') as f:
-    dill.dump(camdata, f)    
+    dill.dump(camdata, f)
