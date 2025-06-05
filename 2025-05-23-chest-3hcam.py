@@ -68,7 +68,7 @@ METHODS = (
     EigenGradCAM, 
     LayerCAM
 )
-THETA = 0.5 # 0.05로 하는게 나을듯
+THETA = 0.05 # 0.05로 하는게 나을듯
 #---#
 PATH = f'./data/chest_xray_THETA{THETA}/3hcam/originalsize'
 dls = ImageDataLoaders.from_name_func(
@@ -112,7 +112,7 @@ for i in range(3):
         torch.nn.Flatten(),
         torch.nn.Linear(2048,out_features=2,bias=False)
     )
-    lrnr.fine_tune(1)
+    lrnr.fine_tune(3)
     for idx, _ in enumerate(dls.train_ds):
         img, cam = get_img_and_originalcam(dls=dls,idx=idx,model=lrnr.model)
         compose = torchvision.transforms.Compose([
